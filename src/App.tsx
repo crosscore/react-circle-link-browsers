@@ -7,7 +7,7 @@ interface Circle {
 }
 
 const App: React.FC = () => {
-  const [circle, setCircle] = useState<Circle>({ x: 50, y: 50 });
+  const [circle, setCircle] = useState<Circle>({ x: 0, y: 0 });
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8080');
