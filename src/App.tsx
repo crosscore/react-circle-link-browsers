@@ -1,4 +1,4 @@
-// my-react-app/src/App.tsx
+// react-circle-link-browsers/src/App.tsx
 import React, { useEffect, useState } from 'react';
 
 interface Circle {

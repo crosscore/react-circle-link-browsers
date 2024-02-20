@@ -1,34 +1,32 @@
+// react-circle-link-browsers/websocket-server/index.js
 const WebSocket = require('ws');
+const { createCircle, updateCircles, circles } = require('./circleMotion');
 
 const wss = new WebSocket.Server({ port: 8080 });
-let circlePosition = { x: 0, y: 0 }; // 円の初期位置
-
-// クライアントのウィンドウ情報を保存するためのマップ
 const clientWindowInfo = new Map();
 
-// 円の位置を更新する関数
-function updateCirclePosition() {
-  // ここで円の位置を更新するロジックを実装
-  circlePosition.x += 1; circlePosition.y += 0.5;
+setInterval(createCircle, 1000); // 1秒ごとに新しい円を生成
 
-  // すべてのクライアントに新しい位置を送信
+function updateCirclePosition() {
+  updateCircles(); // 円の位置を更新
+
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       const windowInfo = clientWindowInfo.get(client);
       if (windowInfo) {
-        // 円の位置をクライアントのウィンドウ情報に基づいて調整
-        const adjustedPosition = {
-          x: circlePosition.x - windowInfo.screenX,
-          y: circlePosition.y - windowInfo.screenY
-        };
-        client.send(JSON.stringify(adjustedPosition));
+        circles.forEach(circle => {
+          const adjustedPosition = {
+            x: circle.position.x - windowInfo.screenX,
+            y: circle.position.y - windowInfo.screenY
+          };
+          client.send(JSON.stringify(adjustedPosition));
+        });
       }
     }
   });
 }
 
-// 定期的に円の位置を更新
-setInterval(updateCirclePosition, 50);
+setInterval(updateCirclePosition, 50); // 50msごとに円の位置を更新
 
 wss.on('connection', ws => {
   ws.on('message', message => {
