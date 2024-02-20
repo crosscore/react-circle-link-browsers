@@ -12,23 +12,23 @@ function createCircle() {
 }
 
 function updateCircles() {
-  const currentTime = Date.now();
+	circles.forEach((circle) => {
+		// 右側への移動速度を設定（例: 毎回2ピクセル移動）
+		const horizontalSpeed = 30;
+		// 下への移動速度を設定（例: 毎回1ピクセル移動）
+		const verticalSpeed = 10;
 
-  circles.forEach(circle => {
-    const timeDelta = (currentTime - circle.createTime) / 1000; // 秒単位の経過時間
+		// 速度に基づいて位置を更新
+		circle.position.x += horizontalSpeed;
+		circle.position.y += verticalSpeed;
 
-    // 重力の影響を速度に加える
-    circle.velocity.y += gravity * timeDelta;
-
-    // 速度に基づいて位置を更新
-    circle.position.x += circle.velocity.x;
-    circle.position.y += circle.velocity.y;
-
-    // 3秒以上経過した円を削除
-    if (currentTime - circle.createTime > 3000) {
-      circles.splice(circles.indexOf(circle), 1);
-    }
-  });
+		// 3秒以上経過した円を削除
+		const currentTime = Date.now();
+		if (currentTime - circle.createTime > 10000) {
+			circles.splice(circles.indexOf(circle), 1);
+		}
+	});
 }
+
 
 module.exports = { createCircle, updateCircles, circles };
