@@ -5,7 +5,7 @@ const { createCircle, updateCircles, circles } = require('./circleMotion');
 const wss = new WebSocket.Server({ port: 8080 });
 const clientWindowInfo = new Map();
 
-setInterval(createCircle, 5000); // 1秒ごとに新しい円を生成
+setInterval(createCircle, 2000); // 1秒ごとに新しい円を生成
 
 function updateCirclePosition() {
   updateCircles(); // 円の位置を更新
@@ -26,7 +26,7 @@ function updateCirclePosition() {
   });
 }
 
-setInterval(updateCirclePosition, 50); // 50msごとに円の位置を更新
+setInterval(updateCirclePosition, 3); // 10msごとに円の位置を更新
 
 wss.on('connection', ws => {
   ws.on('message', message => {
