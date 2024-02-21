@@ -25,7 +25,6 @@ const App: React.FC = () => {
     ws.onopen = () => {
       console.log('Connected to the server');
       sendWindowInfo();
-      // Send window info on resize
       window.addEventListener('resize', sendWindowInfo);
     };
 
@@ -43,7 +42,7 @@ const App: React.FC = () => {
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
       <svg width="100vw" height="100vh">
-        <circle cx={circle.x} cy={circle.y} r="100" fill="#910A67" />
+        <circle cx={circle.x} cy={circle.y} r="150" fill="#910A67" />
       </svg>
     </div>
   );

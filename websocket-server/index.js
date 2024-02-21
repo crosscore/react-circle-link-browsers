@@ -6,10 +6,14 @@ const {
   sendCirclePositions,
 } = require("./circleMotion");
 
-const wss = new WebSocket.Server({ port: 8082 });
+const wss = new WebSocket.Server({ port: 8080 });
 const clientWindowInfo = new Map();
 
 const isOpen = (ws) => ws.readyState === WebSocket.OPEN;
+
+if (process.env.NODE_ENV === "development") {
+  console.log("websocket server running on port 8082");
+}
 
 function updateCirclePosition() {
   updateCircles();

@@ -4,16 +4,17 @@ let circles = [];
 
 function createCircle() {
   const initialPosition = { x: 0, y: 0 };
-  const initialVelocity = { x: Math.random() * 5, y: -10 - Math.random() * 5 };
+  const initialVelocity = { x: 0, y: 0 };
   const createTime = Date.now();
 
-  circles.push({ position: { ...initialPosition }, velocity: { ...initialVelocity }, createTime });
+	circles.push({ position: { ...initialPosition }, velocity: { ...initialVelocity }, createTime });
+	console.log(circles[circles.length - 1]);
 }
 
 function updateCircles() {
   circles.forEach(circle => {
-    const horizontalSpeed = 4;
-    const verticalSpeed = 2;
+    const horizontalSpeed = 2;
+    const verticalSpeed = 1;
 
     circle.position.x += horizontalSpeed;
     circle.position.y += verticalSpeed;
