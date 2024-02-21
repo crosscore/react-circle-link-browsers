@@ -1,5 +1,5 @@
 // react-circle-link-browsers/src/App.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface Circle {
   x: number;
@@ -8,9 +8,10 @@ interface Circle {
 
 const App: React.FC = () => {
   const [circles, setCircles] = useState<Circle[]>([]);
+  const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8080');
+    ws.current = new WebSocket('ws://localhost:8080');
 
     const sendWindowInfo = () => {
       const windowInfo = {
@@ -19,31 +20,51 @@ const App: React.FC = () => {
         innerWidth: window.innerWidth,
         innerHeight: window.innerHeight
       };
-      ws.send(JSON.stringify({ type: 'windowInfo', data: windowInfo }));
+      if (ws.current) {
+        ws.current.send(JSON.stringify({ type: 'windowInfo', data: windowInfo }));
+      }
     };
 
-    ws.onopen = () => {
-      console.log('Connected to the server');
-      sendWindowInfo();
-      window.addEventListener('resize', sendWindowInfo);
-    };
+    if (ws.current) {
+      ws.current.onopen = () => {
+        console.log('Connected to the server');
+        sendWindowInfo();
+        window.addEventListener('resize', sendWindowInfo);
+      };
 
-    ws.onmessage = (event) => {
-      const newCircles = JSON.parse(event.data);
-      setCircles(newCircles);
-    };
+      ws.current.onmessage = (event) => {
+        const newCircles = JSON.parse(event.data);
+        setCircles(newCircles);
+      };
+    }
 
     return () => {
-      ws.close();
+      if (ws.current) {
+        ws.current.close();
+      }
       window.removeEventListener('resize', sendWindowInfo);
     };
   }, []);
 
+  const switchPattern = () => {
+    if (ws.current) {
+      ws.current.send(JSON.stringify({ type: 'switchPattern' }));
+    }
+  };
+
   return (
-    <div style={{ height: '100vh', width: '100vw' }}>
+    <div style={{ height: '100vh', width: '100vw', position: 'relative' }}>
+      <button 
+        onClick={switchPattern}
+        style={{ 
+          position: 'absolute',
+          top: '10px',
+          right: '30px'
+        }}
+      >switch pattern</button>
       <svg width="100vw" height="100vh">
         {circles.map((circle, index) => (
-          <circle key={index} cx={circle.x} cy={circle.y} r="150" fill="#910A67" />
+          <circle key={index} cx={circle.x} cy={circle.y} r="120" fill="#910A67" />
         ))}
       </svg>
     </div>

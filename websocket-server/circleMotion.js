@@ -9,11 +9,33 @@ function createCircle() {
   circles.push({ position: { ...initialPosition }, velocity, createTime });
   console.log(circles[circles.length - 1]);
 }
+function pattern1(circle) {
+  circle.position.x += circle.velocity.x;
+  circle.position.y += circle.velocity.y;
+}
+
+function pattern2(circle) {
+  circle.position.x += circle.velocity.x * 3;
+  circle.position.y += circle.velocity.y * 3;
+}
+
+function pattern3(circle) {
+  circle.position.x += circle.velocity.x * 6;
+  circle.position.y += circle.velocity.y * 6;
+}
+
+let patterns = [pattern1, pattern2, pattern3];
+let currentPattern = patterns[0];
+let index = 0;
+
+function switchPattern() {
+  index = (index + 1) % patterns.length;
+  currentPattern = patterns[index];
+}
 
 function updateCircles() {
   circles.forEach(circle => {
-    circle.position.x += circle.velocity.x;
-    circle.position.y += circle.velocity.y;
+    currentPattern(circle);
   });
 }
 
@@ -39,5 +61,6 @@ function removeOldCircles() {
   circles = circles.filter(circle => currentTime - circle.createTime <= 4000);
 }
 
-module.exports = { createCircle, updateCircles, sendCirclePositions, removeOldCircles, circles };
-
+module.exports = {
+  createCircle, updateCircles, sendCirclePositions, removeOldCircles, switchPattern, circles
+};

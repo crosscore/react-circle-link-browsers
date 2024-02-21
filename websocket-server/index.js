@@ -4,12 +4,12 @@ const {
   createCircle,
   updateCircles,
   sendCirclePositions,
-  removeOldCircles
+  removeOldCircles,
+  switchPattern,
 } = require("./circleMotion");
 
 const wss = new WebSocket.Server({ port: 8080 });
 const clientWindowInfo = new Map();
-
 const isOpen = (ws) => ws.readyState === WebSocket.OPEN;
 
 if (process.env.NODE_ENV === "development") {
@@ -21,7 +21,7 @@ function updateCirclePosition() {
   sendCirclePositions(wss, clientWindowInfo, isOpen);
 }
 
-setInterval(createCircle, 1000);
+setInterval(createCircle, 500);
 setInterval(updateCirclePosition, 9);
 setInterval(removeOldCircles, 1000);
 
@@ -33,8 +33,14 @@ wss.on('connection', ws => {
     }
   });
 
+  ws.on('message', message => {
+    const msg = JSON.parse(message);
+    if (msg.type === 'switchPattern') {
+      switchPattern();
+    }
+  });
+
   ws.on('close', () => {
     clientWindowInfo.delete(ws);
   });
 });
-
