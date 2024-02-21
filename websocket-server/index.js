@@ -21,8 +21,8 @@ function updateCirclePosition() {
   sendCirclePositions(wss, clientWindowInfo, isOpen);
 }
 
-setInterval(createCircle, 3000);
-setInterval(updateCirclePosition, 6);
+setInterval(createCircle, 1000);
+setInterval(updateCirclePosition, 9);
 setInterval(removeOldCircles, 1000);
 
 wss.on('connection', ws => {

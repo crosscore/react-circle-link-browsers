@@ -7,7 +7,7 @@ interface Circle {
 }
 
 const App: React.FC = () => {
-  const [circle, setCircle] = useState<Circle>({ x: 0, y: 0 });
+  const [circles, setCircles] = useState<Circle[]>([]);
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8080');
@@ -29,8 +29,8 @@ const App: React.FC = () => {
     };
 
     ws.onmessage = (event) => {
-      const newPosition = JSON.parse(event.data);
-      setCircle(newPosition);
+      const newCircles = JSON.parse(event.data);
+      setCircles(newCircles);
     };
 
     return () => {
@@ -42,7 +42,9 @@ const App: React.FC = () => {
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
       <svg width="100vw" height="100vh">
-        <circle cx={circle.x} cy={circle.y} r="150" fill="#910A67" />
+        {circles.map((circle, index) => (
+          <circle key={index} cx={circle.x} cy={circle.y} r="150" fill="#910A67" />
+        ))}
       </svg>
     </div>
   );

@@ -22,13 +22,13 @@ function sendCirclePositions(wss, clientWindowInfo, isOpen) {
     if (isOpen(client)) {
       const windowInfo = clientWindowInfo.get(client);
       if (windowInfo) {
-        circles.forEach(circle => {
-          const adjustedPosition = {
+        const positions = circles.map(circle => {
+          return {
             x: circle.position.x - windowInfo.screenX,
             y: circle.position.y - windowInfo.screenY
           };
-          client.send(JSON.stringify(adjustedPosition));
         });
+        client.send(JSON.stringify(positions)); // send the circle positions to the client
       }
     }
   });
@@ -36,7 +36,7 @@ function sendCirclePositions(wss, clientWindowInfo, isOpen) {
 
 function removeOldCircles() {
   const currentTime = Date.now();
-  circles = circles.filter(circle => currentTime - circle.createTime <= 9000);
+  circles = circles.filter(circle => currentTime - circle.createTime <= 4000);
 }
 
 module.exports = { createCircle, updateCircles, sendCirclePositions, removeOldCircles, circles };
