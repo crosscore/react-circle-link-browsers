@@ -7,13 +7,15 @@ const {
   removeOldCircles,
   switchPattern,
 } = require("./circleMotion");
+const player = require("./player");
+
 
 const wss = new WebSocket.Server({ port: 8080 });
 const clientWindowInfo = new Map();
 const isOpen = (ws) => ws.readyState === WebSocket.OPEN;
 
 if (process.env.NODE_ENV === "development") {
-  console.log("websocket server running on port 8082");
+  console.log("websocket server running on port 8080");
 }
 
 function updateCirclePosition() {
@@ -38,6 +40,13 @@ wss.on('connection', ws => {
     if (msg.type === 'switchPattern') {
       switchPattern();
     }
+  });
+
+  ws.on('message', message => {
+    const msg = JSON.parse(message);
+    if (msg.type === 'movePlayer') {
+      player.move(msg.direction);
+    };
   });
 
   ws.on('close', () => {

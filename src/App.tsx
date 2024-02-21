@@ -9,10 +9,12 @@ interface Circle {
 const App: React.FC = () => {
   const [circles, setCircles] = useState<Circle[]>([]);
   const ws = useRef<WebSocket | null>(null);
+  const [player, setPlayerPosition] = useState({ position: { x: 0, y: 0 } });
 
+  
   useEffect(() => {
     ws.current = new WebSocket('ws://localhost:8080');
-
+    
     const sendWindowInfo = () => {
       const windowInfo = {
         screenX: window.screenX,
@@ -24,7 +26,7 @@ const App: React.FC = () => {
         ws.current.send(JSON.stringify({ type: 'windowInfo', data: windowInfo }));
       }
     };
-
+    
     if (ws.current) {
       ws.current.onopen = () => {
         console.log('Connected to the server');
@@ -34,10 +36,32 @@ const App: React.FC = () => {
 
       ws.current.onmessage = (event) => {
         const newCircles = JSON.parse(event.data);
-        setCircles(newCircles);
+        if (newCircles) {
+          setCircles(newCircles);
+        }
       };
     }
 
+    ws.current.onmessage = (event) => {
+      console.log('Received data', event.data);
+      const data = JSON.parse(event.data);
+      if (data.player) {
+        setPlayerPosition(data.player);
+        console.log('Update player position:', data.player);
+      } else {
+        setCircles(data.circles);
+        console.log('Update circles:', data.circles);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      console.log('Key pressed', event.key);
+      if (ws.current) {
+        ws.current.send(JSON.stringify({ type: 'movePlayer', direction: event.key }));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       if (ws.current) {
         ws.current.close();
@@ -61,8 +85,11 @@ const App: React.FC = () => {
           top: '10px',
           right: '30px'
         }}
-      >switch pattern</button>
+      >
+        switch pattern
+      </button>
       <svg width="100vw" height="100vh">
+        <circle cx={player.position.x} cy={player.position.y} r="10" fill="blue" />
         {circles.map((circle, index) => (
           <circle key={index} cx={circle.x} cy={circle.y} r="120" fill="#910A67" />
         ))}

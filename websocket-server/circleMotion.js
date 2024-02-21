@@ -7,7 +7,7 @@ function createCircle() {
   const velocity = { x: 4, y: 2 };
   const createTime = Date.now();
   circles.push({ position: { ...initialPosition }, velocity, createTime });
-  console.log(circles[circles.length - 1]);
+  //console.log(circles[circles.length - 1]);
 }
 function pattern1(circle) {
   circle.position.x += circle.velocity.x;
