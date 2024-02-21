@@ -4,20 +4,16 @@ let circles = [];
 
 function createCircle() {
   const initialPosition = { x: 0, y: 0 };
-  const initialVelocity = { x: 0, y: 0 };
+  const velocity = { x: 2, y: 1 };
   const createTime = Date.now();
-
-	circles.push({ position: { ...initialPosition }, velocity: { ...initialVelocity }, createTime });
-	console.log(circles[circles.length - 1]);
+  circles.push({ position: { ...initialPosition }, velocity, createTime });
+  console.log(circles[circles.length - 1]);
 }
 
 function updateCircles() {
   circles.forEach(circle => {
-    const horizontalSpeed = 2;
-    const verticalSpeed = 1;
-
-    circle.position.x += horizontalSpeed;
-    circle.position.y += verticalSpeed;
+    circle.position.x += circle.velocity.x;
+    circle.position.y += circle.velocity.y;
 
     const currentTime = Date.now();
     if (currentTime - circle.createTime > 6000) {
