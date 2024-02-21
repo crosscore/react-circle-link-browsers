@@ -25,7 +25,7 @@ const App: React.FC = () => {
     ws.onopen = () => {
       console.log('Connected to the server');
       sendWindowInfo();
-      // ウィンドウサイズ変更時にも情報を送信
+      // Send window info on resize
       window.addEventListener('resize', sendWindowInfo);
     };
 
