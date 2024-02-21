@@ -4,7 +4,7 @@ let circles = [];
 
 function createCircle() {
   const initialPosition = { x: 0, y: 0 };
-  const velocity = { x: 2, y: 1 };
+  const velocity = { x: 4, y: 2 };
   const createTime = Date.now();
   circles.push({ position: { ...initialPosition }, velocity, createTime });
   console.log(circles[circles.length - 1]);
@@ -14,13 +14,14 @@ function updateCircles() {
   circles.forEach(circle => {
     circle.position.x += circle.velocity.x;
     circle.position.y += circle.velocity.y;
-
-    const currentTime = Date.now();
-    if (currentTime - circle.createTime > 6000) {
-      circles.splice(circles.indexOf(circle), 1);
-    }
   });
 }
+
+function removeOldCircles() {
+  const currentTime = Date.now();
+  circles = circles.filter(circle => currentTime - circle.createTime <= 9000);
+}
+
 
 function sendCirclePositions(wss, clientWindowInfo, isOpen) {
   wss.clients.forEach(client => {
@@ -39,5 +40,5 @@ function sendCirclePositions(wss, clientWindowInfo, isOpen) {
   });
 }
 
-module.exports = { createCircle, updateCircles, sendCirclePositions, circles };
+module.exports = { createCircle, updateCircles, sendCirclePositions, removeOldCircles, circles };
 

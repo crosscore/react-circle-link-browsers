@@ -4,6 +4,7 @@ const {
   createCircle,
   updateCircles,
   sendCirclePositions,
+  removeOldCircles
 } = require("./circleMotion");
 
 const wss = new WebSocket.Server({ port: 8080 });
@@ -21,7 +22,8 @@ function updateCirclePosition() {
 }
 
 setInterval(createCircle, 3000);
-setInterval(updateCirclePosition, 3);
+setInterval(updateCirclePosition, 6);
+setInterval(removeOldCircles, 1000);
 
 wss.on('connection', ws => {
   ws.on('message', message => {
