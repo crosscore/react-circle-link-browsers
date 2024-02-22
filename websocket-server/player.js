@@ -1,5 +1,4 @@
 // react-circle-link-browsers/websocket-server/player.js
-// player.js
 class Player {
   constructor(initialX, initialY) {
     this.position = { x: initialX, y: initialY };
@@ -24,4 +23,3 @@ class Player {
 }
 
 module.exports = Player;
-
