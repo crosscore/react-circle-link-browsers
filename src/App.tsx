@@ -13,6 +13,19 @@ const App: React.FC = () => {
   useEffect(() => {
     ws.current = new WebSocket("ws://localhost:8080");
 
+    if (ws.current) {
+      ws.current.onopen = () => {
+        console.log("Connected to the server");
+        sendWindowInfo();
+        window.addEventListener("resize", sendWindowInfo);
+      };
+
+      ws.current.onmessage = (event) => {
+        const newCircles = JSON.parse(event.data);
+        setCircles(newCircles);
+      };
+    }
+
     const sendWindowInfo = () => {
       const windowInfo = {
         screenX: window.screenX,
@@ -26,19 +39,6 @@ const App: React.FC = () => {
         );
       }
     };
-
-    if (ws.current) {
-      ws.current.onopen = () => {
-        console.log("Connected to the server");
-        sendWindowInfo();
-        window.addEventListener("resize", sendWindowInfo);
-      };
-
-      ws.current.onmessage = (event) => {
-        const newCircles = JSON.parse(event.data);
-        setCircles(newCircles);
-      };
-    }
 
     return () => {
       if (ws.current) {
@@ -55,11 +55,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <div style={{ height: "100vh", width: "100vw", position: "relative"}}>
-      <button onClick={switchPattern} style={{position: 'absolute', top: '10px', right:'20px'}}>switch pattern</button>
+    <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
+      <button
+        onClick={switchPattern}
+        style={{ position: "absolute", top: "10px", right: "20px" }}
+      >
+        switch pattern
+      </button>
       <svg width="100vw" height="100vh">
         {circles.map((circle, index) => (
-          <circle key={index} cx={circle.x} cy={circle.y} r="150" fill="#910A67" />
+          <circle
+            key={index}
+            cx={circle.x}
+            cy={circle.y}
+            r="120"
+            fill="#910A67"
+          />
         ))}
       </svg>
     </div>
