@@ -10,11 +10,24 @@ function createCircle() {
   console.log(circles[circles.length - 1]);
 }
 
+function updateCirclePosition(circle, multiplier) {
+  circle.position.x += circle.velocity.x * multiplier;
+  circle.position.y += circle.velocity.y * multiplier;
+}
+
+let currentPatternMultiplier = 1;
+let patternMultipliers = [1, 3, 6];
+
 function updateCircles() {
   circles.forEach((circle) => {
-    circle.position.x += circle.velocity.x;
-    circle.position.y += circle.velocity.y;
+    updateCirclePosition(circle, currentPatternMultiplier);
   });
+}
+
+function switchPattern() {
+  const currentIndex = patternMultipliers.indexOf(currentPatternMultiplier);
+  const nextIndex = (currentIndex + 1) % patternMultipliers.length;
+  currentPatternMultiplier = patternMultipliers[nextIndex];
 }
 
 function sendCirclePositions(wss, clientWindowInfo, isOpen) {
@@ -28,16 +41,15 @@ function sendCirclePositions(wss, clientWindowInfo, isOpen) {
             y: circle.position.y - windowInfo.screenY,
           };
         });
-        client.send(JSON.stringify(positions)); // all circles are sent to the client
+        client.send(JSON.stringify(positions)); // send the circle positions to the client
       }
     }
   });
 }
 
-
 function removeOldCircles() {
   const currentTime = Date.now();
-  circles = circles.filter((circle) => currentTime - circle.createTime <= 9000);
+  circles = circles.filter((circle) => currentTime - circle.createTime <= 4000);
 }
 
 module.exports = {
@@ -45,5 +57,6 @@ module.exports = {
   updateCircles,
   sendCirclePositions,
   removeOldCircles,
+  switchPattern,
   circles,
 };

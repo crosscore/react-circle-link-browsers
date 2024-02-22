@@ -5,11 +5,11 @@ const {
   updateCircles,
   sendCirclePositions,
   removeOldCircles,
+  switchPattern,
 } = require("./circleMotion");
 
 const wss = new WebSocket.Server({ port: 8080 });
 const clientWindowInfo = new Map();
-
 const isOpen = (ws) => ws.readyState === WebSocket.OPEN;
 
 if (process.env.NODE_ENV === "development") {
@@ -30,6 +30,13 @@ wss.on("connection", (ws) => {
     const msg = JSON.parse(message);
     if (msg.type === "windowInfo") {
       clientWindowInfo.set(ws, msg.data);
+    }
+  });
+
+  ws.on("message", (message) => {
+    const msg = JSON.parse(message);
+    if (msg.type === "switchPattern") {
+      switchPattern();
     }
   });
 
