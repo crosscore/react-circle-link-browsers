@@ -11,20 +11,32 @@ const App: React.FC = () => {
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:8080");
+    const connectWebSocket = () => {
+      ws.current = new WebSocket("ws://localhost:8080");
 
-    if (ws.current) {
-      ws.current.onopen = () => {
-        console.log("Connected to the server");
-        sendWindowInfo();
-        window.addEventListener("resize", sendWindowInfo);
-      };
+      if (ws.current) {
+        ws.current.onopen = () => {
+          console.log("Connected to the server");
+          sendWindowInfo();
+          window.addEventListener("resize", sendWindowInfo);
+        };
 
-      ws.current.onmessage = (event) => {
-        const newCircles = JSON.parse(event.data);
-        setCircles(newCircles);
-      };
-    }
+        ws.current.onerror = (error) => {
+          console.error("WebSocket Error:", error);
+        };
+
+        ws.current.onclose = () => {
+          console.log("WebSocket Connection Closed");
+        };
+
+        ws.current.onmessage = (event) => {
+          const newCircles = JSON.parse(event.data);
+          setCircles(newCircles);
+        };
+      }
+    };
+
+    setTimeout(connectWebSocket, 1000);
 
     const sendWindowInfo = () => {
       const windowInfo = {
@@ -33,7 +45,7 @@ const App: React.FC = () => {
         innerWidth: window.innerWidth,
         innerHeight: window.innerHeight,
       };
-      if (ws.current) {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send(
           JSON.stringify({ type: "windowInfo", data: windowInfo })
         );
