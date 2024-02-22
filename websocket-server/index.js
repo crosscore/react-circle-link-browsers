@@ -21,7 +21,7 @@ function updateCirclePosition() {
   sendCirclePositions(wss, clientWindowInfo, isOpen);
 }
 
-setInterval(createCircle, 1000);
+setInterval(createCircle, 500);
 setInterval(updateCirclePosition, 9);
 setInterval(removeOldCircles, 1000);
 
