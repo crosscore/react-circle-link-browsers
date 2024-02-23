@@ -1,4 +1,4 @@
-// react-circle-link-browsers/websocket-server/index.js
+// websocket-server/index.js
 const WebSocket = require("ws");
 const {
   createCircle,

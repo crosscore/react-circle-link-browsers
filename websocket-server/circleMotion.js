@@ -1,4 +1,4 @@
-// react-circle-link-browsers/websocket-server/circleMotion.js
+// websocket-server/circleMotion.js
 
 let circles = [];
 
@@ -16,7 +16,7 @@ function updateCirclePosition(circle, multiplier) {
 }
 
 let currentPatternMultiplier = 1;
-let patternMultipliers = [2, 3, 6];
+let patternMultipliers = [1, 2, 3, 6];
 
 function updateCircles() {
   circles.forEach((circle) => {

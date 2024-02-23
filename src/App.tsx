@@ -1,4 +1,4 @@
-// react-circle-link-browsers/src/App.tsx
+// src/App.tsx
 import React, { useEffect, useState, useRef } from "react";
 
 interface Circle {
@@ -36,7 +36,20 @@ const App: React.FC = () => {
       }
     };
 
-    setTimeout(connectWebSocket, 1000);
+    let lastX = window.screenX;
+    let lastY = window.screenY;
+
+    const checkWindowMovement = () => {
+      if (window.screenX !== lastX || window.screenY !== lastY) {
+        sendWindowInfo();
+        lastX = window.screenX;
+        lastY = window.screenY;
+      }
+    };
+
+    const movementCheckInterval = setInterval(checkWindowMovement, 10);
+
+    setTimeout(connectWebSocket, 1);
 
     const sendWindowInfo = () => {
       const windowInfo = {
@@ -57,6 +70,7 @@ const App: React.FC = () => {
         ws.current.close();
       }
       window.removeEventListener("resize", sendWindowInfo);
+      clearInterval(movementCheckInterval);
     };
   }, []);
 

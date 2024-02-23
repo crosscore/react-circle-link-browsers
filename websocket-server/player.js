@@ -1,4 +1,4 @@
-// react-circle-link-browsers/websocket-server/player.js
+// websocket-server/player.js
 class Player {
   constructor(initialX, initialY) {
     this.position = { x: initialX, y: initialY };
