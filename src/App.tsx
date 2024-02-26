@@ -6,13 +6,16 @@ interface Circle {
   y: number;
 }
 
+const WEBSOCKET_URL = "ws://localhost:8080";
+const MOVEMENT_CHECK_INTERVAL = 10;
+
 const App: React.FC = () => {
   const [circles, setCircles] = useState<Circle[]>([]);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const connectWebSocket = () => {
-      ws.current = new WebSocket("ws://localhost:8080");
+      ws.current = new WebSocket(WEBSOCKET_URL);
 
       if (ws.current) {
         ws.current.onopen = () => {
@@ -20,15 +23,12 @@ const App: React.FC = () => {
           sendWindowInfo();
           window.addEventListener("resize", sendWindowInfo);
         };
-
         ws.current.onerror = (error) => {
           console.error("WebSocket Error:", error);
         };
-
         ws.current.onclose = () => {
           console.log("WebSocket Connection Closed");
         };
-
         ws.current.onmessage = (event) => {
           const newCircles = JSON.parse(event.data);
           setCircles(newCircles);
@@ -38,7 +38,6 @@ const App: React.FC = () => {
 
     let lastX = window.screenX;
     let lastY = window.screenY;
-
     const checkWindowMovement = () => {
       if (window.screenX !== lastX || window.screenY !== lastY) {
         sendWindowInfo();
@@ -47,8 +46,10 @@ const App: React.FC = () => {
       }
     };
 
-    const movementCheckInterval = setInterval(checkWindowMovement, 10);
-
+    const movementCheckInterval = setInterval(
+      checkWindowMovement,
+      MOVEMENT_CHECK_INTERVAL
+    );
     setTimeout(connectWebSocket, 1);
 
     const sendWindowInfo = () => {
@@ -104,3 +105,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
