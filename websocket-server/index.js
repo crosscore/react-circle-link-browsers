@@ -9,12 +9,14 @@ const {
 } = require("./circleMotion");
 
 const PORT = 8080;
-const CREATE_CIRCLE_INTERVAL = 500; // Interval for creating circles in milliseconds
-const UPDATE_CIRCLE_POSITION_INTERVAL = 9; // Interval for updating circle positions in milliseconds
-const REMOVE_OLD_CIRCLES_INTERVAL = 1000; // Interval for removing old circles in milliseconds
+const CREATE_CIRCLE_INTERVAL = 500;
+const UPDATE_CIRCLE_POSITION_INTERVAL = 9;
+const REMOVE_OLD_CIRCLES_INTERVAL = 1000;
 
 const wss = new WebSocket.Server({ port: PORT });
 const clientWindowInfo = new Map();
+const clientIDs = new Map();
+let nextClientID = 0;
 
 /**
  * Checks if a WebSocket connection is open.
@@ -36,17 +38,23 @@ setInterval(updateCirclePositions, UPDATE_CIRCLE_POSITION_INTERVAL);
 setInterval(removeOldCircles, REMOVE_OLD_CIRCLES_INTERVAL);
 
 wss.on("connection", (ws) => {
+  const clientID = nextClientID++;
+  clientIDs.set(ws, clientID);
+  console.log(`Client ${clientID} connected`);
+
   ws.on("message", (message) => {
     const msg = JSON.parse(message);
     if (msg.type === "windowInfo") {
       clientWindowInfo.set(ws, msg.data);
     } else if (msg.type === "switchPattern") {
       switchPattern();
+      console.log("Switching pattern");
     }
   });
 
   ws.on("close", () => {
     clientWindowInfo.delete(ws);
+    console.log(`Client ${clientIDs.get(ws)} disconnected`);
+    clientIDs.delete(ws);
   });
 });
-
