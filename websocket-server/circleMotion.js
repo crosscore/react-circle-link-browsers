@@ -2,7 +2,7 @@
 
 let circles = [];
 const circleVelocity = { x: 4, y: 2 };
-const circleLifetime = 4000;
+const circleLifetime = 5000;
 let currentPatternMultiplier = 1;
 const patternMultipliers = [1, 2, 3, 6];
 
