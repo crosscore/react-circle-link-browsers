@@ -32,8 +32,13 @@ const App: React.FC = () => {
           console.log("WebSocket Connection Closed");
         };
         ws.current.onmessage = (event) => {
-          const newCircles = JSON.parse(event.data);
-          setCircles(newCircles);
+          const message = JSON.parse(event.data);
+          if (message.type === "updateSize") {
+            setCircleSize(message.size);
+          } else {
+            const newCircles = message;
+            setCircles(newCircles);
+          }
         };
       }
     };
@@ -90,6 +95,12 @@ const App: React.FC = () => {
   const halfCircleSize = () => {
     setCircleSize(circleSize * 0.5);
   };
+
+  const syncSize = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({ type: "syncSize", size: circleSize }));
+    }
+  }
   
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
@@ -105,6 +116,7 @@ const App: React.FC = () => {
         <button onClick={switchPattern}>switch pattern</button>
         <button onClick={doubleCircleSize}>circle size 2x</button>
         <button onClick={halfCircleSize}>circle size 0.5x</button>
+        <button onClick={syncSize}>sync size</button>
       </div>
       <svg width="100vw" height="100vh">
         {circles.map((circle, index) => (

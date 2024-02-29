@@ -57,6 +57,13 @@ wss.on("connection", (ws) => {
     } else if (msg.type === "switchPattern") {
       switchPattern();
       console.log("Switching pattern");
+    } else if (msg.type === "syncSize") {
+      console.log("Syncing size");
+      wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: "updateSize", size: msg.size }));
+        }
+      });
     }
   });
 
