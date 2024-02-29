@@ -9,9 +9,11 @@ interface Circle {
 const WEBSOCKET_URL = "ws://localhost:8080";
 const MOVEMENT_CHECK_INTERVAL = 10;
 
+
 const App: React.FC = () => {
   const [circles, setCircles] = useState<Circle[]>([]);
   const ws = useRef<WebSocket | null>(null);
+  const [circleSize, setCircleSize] = useState<number>(120);
 
   useEffect(() => {
     const connectWebSocket = () => {
@@ -81,22 +83,37 @@ const App: React.FC = () => {
     }
   };
 
+  const doubleCircleSize = () => {
+    setCircleSize(circleSize * 2);
+  };
+
+  const halfCircleSize = () => {
+    setCircleSize(circleSize * 0.5);
+  };
+  
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
-      <button
-        onClick={switchPattern}
-        style={{ position: "absolute", top: "10px", right: "20px" }}
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "20px",
+          display: "flex",
+          gap: "10px",
+        }}
       >
-        switch pattern
-      </button>
+        <button onClick={switchPattern}>switch pattern</button>
+        <button onClick={doubleCircleSize}>circle size 2x</button>
+        <button onClick={halfCircleSize}>circle size 0.5x</button>
+      </div>
       <svg width="100vw" height="100vh">
         {circles.map((circle, index) => (
           <circle
             key={index}
             cx={circle.x}
             cy={circle.y}
-            r="120"
-            fill="#910A67"
+            r={circleSize.toString()}
+            fill="#47b0dc"
           />
         ))}
       </svg>
@@ -105,4 +122,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-

@@ -1,41 +1,31 @@
 // websocket-server/circleMotion.js
 
 let circles = [];
-const initialCirclePosition = { x: 0, y: 0 };
 const circleVelocity = { x: 4, y: 2 };
-const circleLifetime = 4000; // Circle lifetime in milliseconds
+const circleLifetime = 4000;
 let currentPatternMultiplier = 1;
 const patternMultipliers = [1, 2, 3, 6];
 
-/**
- * Creates a new circle and adds it to the circles array.
- */
-function createCircle() {
+function createCircle(windowInfo) {
+  const initialCirclePosition = { x: 0, y: windowInfo.innerHeight / 2 };
   const createTime = Date.now();
-  circles.push({ position: { ...initialCirclePosition }, velocity: circleVelocity, createTime });
+  circles.push({
+    position: { ...initialCirclePosition },
+    velocity: circleVelocity,
+    createTime,
+  });
   //console.log(circles[circles.length - 1]);
 }
 
-/**
- * Updates the position of a given circle based on its velocity and a multiplier.
- * @param {Object} circle - The circle to update.
- * @param {number} multiplier - The multiplier to apply to the circle's velocity.
- */
 function updateCirclePosition(circle, multiplier) {
   circle.position.x += circle.velocity.x * multiplier;
-  circle.position.y += circle.velocity.y * multiplier;
+  //circle.position.y += circle.velocity.y * multiplier;
 }
 
-/**
- * Updates the position of all circles.
- */
 function updateCircles() {
   circles.forEach(circle => updateCirclePosition(circle, currentPatternMultiplier));
 }
 
-/**
- * Switches the current pattern multiplier to the next one in the sequence.
- */
 function switchPattern() {
   const currentIndex = patternMultipliers.indexOf(currentPatternMultiplier);
   const nextIndex = (currentIndex + 1) % patternMultipliers.length;
@@ -58,14 +48,12 @@ function sendCirclePositions(wss, clientWindowInfo, isOpen) {
           y: circle.position.y - windowInfo.screenY,
         }));
         client.send(JSON.stringify(positions));
+        //console.log(`Sending circle positions: ${JSON.stringify(positions, null, 0)}`);
       }
     }
   });
 }
 
-/**
- * Removes circles that have existed longer than their lifetime.
- */
 function removeOldCircles() {
   const currentTime = Date.now();
   circles = circles.filter(circle => currentTime - circle.createTime <= circleLifetime);

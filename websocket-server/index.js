@@ -1,5 +1,6 @@
 // websocket-server/index.js
 const WebSocket = require("ws");
+const { v4: uuidv4 } = require("uuid");
 const {
   createCircle,
   updateCircles,
@@ -16,29 +17,36 @@ const REMOVE_OLD_CIRCLES_INTERVAL = 1000;
 const wss = new WebSocket.Server({ port: PORT });
 const clientWindowInfo = new Map();
 const clientIDs = new Map();
-let nextClientID = 0;
 
-/**
- * Checks if a WebSocket connection is open.
- * @param {WebSocket} ws - The WebSocket to check.
- * @returns {boolean} True if the WebSocket is open, otherwise false.
- */
 const isOpen = (ws) => ws.readyState === WebSocket.OPEN;
+// console.log(`WebSocket.Open: ${WebSocket.OPEN}`);
+// console.log(`WebSocket.CLOSED: ${WebSocket.CLOSED}`);
+// console.log(`ws.readyState: ${wss.readyState}`);
 
-/**
- * Updates the positions of circles and sends the new positions to connected clients.
- */
 function updateCirclePositions() {
   updateCircles();
   sendCirclePositions(wss, clientWindowInfo, isOpen);
 }
 
-setInterval(createCircle, CREATE_CIRCLE_INTERVAL);
 setInterval(updateCirclePositions, UPDATE_CIRCLE_POSITION_INTERVAL);
 setInterval(removeOldCircles, REMOVE_OLD_CIRCLES_INTERVAL);
 
+setInterval(() => {
+  wss.clients.forEach((client) => {
+    if (isOpen(client)) {
+      const windowInfo = clientWindowInfo.get(client);
+      if (windowInfo) {
+        //console.log(`windowInfo.innerHeight: ${windowInfo.innerHeight}`);
+        createCircle(windowInfo);
+      }
+    }
+  });
+}, CREATE_CIRCLE_INTERVAL);
+
+
 wss.on("connection", (ws) => {
-  const clientID = nextClientID++;
+  console.log(`is open: ${isOpen(ws)}`);
+  const clientID = uuidv4();
   clientIDs.set(ws, clientID);
   console.log(`Client ${clientID} connected`);
 
@@ -53,6 +61,7 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    console.log(`is open: ${isOpen(ws)}`);
     clientWindowInfo.delete(ws);
     console.log(`Client ${clientIDs.get(ws)} disconnected`);
     clientIDs.delete(ws);
